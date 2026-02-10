@@ -19,7 +19,7 @@ cleanData <- function(url) {
         as.character()
 
     dataTableOne <- dataTableOne %>%
-        slice(-c(1, 3)) %>%
+        slice(-c(1:3, length(dataTableOne[, 1]))) %>%
         setNames(c("NomAbrege", "Nom", "Numero", new_cols)) %>%
         mutate(across(-c(NomAbrege, Nom, Numero), ~ str_remove_all(., "'"))) %>%
         mutate(across(-c(NomAbrege, Nom, Numero), as.numeric))
@@ -38,6 +38,7 @@ View(cleanDataTableTwo)
 View(cleanDataTableThree)
 View(cleanDataTableFour)
 View(cleanDataTableFive)
+
 
 
 
