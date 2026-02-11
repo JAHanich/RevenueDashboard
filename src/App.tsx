@@ -1,4 +1,4 @@
-import { Stack, ComboBox, IComboBoxOption, Autofill, format } from "@fluentui/react";
+import { Stack, ComboBox, IComboBoxOption, Autofill, format, HighContrastSelectorWhite } from "@fluentui/react";
 import { Card, CardHeader, Text } from "@fluentui/react-components";
 import { useEffect, useState } from "react";
 import { Line, Bar } from "react-chartjs-2";
@@ -42,10 +42,34 @@ export default function App() {
   const filteredCustomerData: RevenueRow[] = filterRevenue(data, selectedCustomer, startMonth, endMonth);
   const filteredData: RevenueRow[] = filterRevenue(data, "All", startMonth, endMonth);
 
+  const option = {
+  scales: {
+    x: {
+      ticks: {
+        color: 'white',
+        font: {
+          size: 12,
+          weight: 'bold',
+        },
+      },
+    },
+    y: {
+      ticks: {
+        color: 'white',
+        font: {
+          size: 12,
+        },
+      },
+    },
+  },
+};
+
 
   return (
     <Stack
-      styles={{ root: { width: "100%", padding: 20 } }} tokens={{ childrenGap: 20 }}>
+      horizontalAlign="center"
+      styles={{ root: { width: "100%", padding: 20 } }} 
+      tokens={{ childrenGap: 20 }}>
       <h1>Revenue Dashboard</h1>
 
       <Stack horizontal tokens={{ childrenGap: 16 }} styles={{ root: { alignItems: "end" } }}>
@@ -57,7 +81,10 @@ export default function App() {
           useComboBoxAsMenuWidth
           allowFreeform
           autoComplete="on"
-          styles={{ root: { width: 250 } }}
+          styles={{ 
+            label: {
+              color: "#ffffff"},
+            root: { width: 250 } }}
         />
 
         <ComboBox
@@ -68,7 +95,10 @@ export default function App() {
           useComboBoxAsMenuWidth
           allowFreeform
           autoComplete="on"
-          styles={{ root: { width: 150 } }}
+          styles={{ 
+            label: {
+              color: "#ffffff"},
+            root: { width: 150 } }}
         />
 
         <ComboBox
@@ -79,58 +109,69 @@ export default function App() {
           useComboBoxAsMenuWidth
           allowFreeform
           autoComplete="on"
-          styles={{ root: { width: 150 } }}
+          styles={{ 
+            label: {
+              color: "#ffffff"},
+            root: { width: 150 } }}
         />
       </Stack>
-      <Card>
-        <CardHeader
-          header={<Text weight="semibold">Revenue for { selectedCustomer }</Text>}
-        />
-        <Line data={formatCustomerRevenue(filteredCustomerData)} />
-      </Card>
-      <Card>
-        <CardHeader
-          header={<Text weight="semibold">Revenue for { selectedCustomer } in { endMonth.slice(-2) }</Text>}
-        />
-        <Bar data={formatCustomerYOY(filteredCustomerData)} />
-      </Card>
-      <Card>
-        <CardHeader
-          header={<Text weight="semibold">Monthly revenue growth for { selectedCustomer }</Text>}
-        />
-        <Bar data={formatCustomerMOM(filteredCustomerData)} />
-      </Card>
-      <Card>
-        <CardHeader
-          header={<Text weight="semibold">Share of Total Revenue for { selectedCustomer }</Text>}
-        />
-        <Line data={prepareCustomerShareOf(filteredCustomerData, filteredData)} />
-      </Card>
+      <Stack horizontal tokens={{ childenGap: 20 }}>
+        <Stack tokens={{ childenGap: 20 }}>
+          <Card style = {{ width:500, height: 300 }}>
+            <CardHeader
+              header={<Text weight="semibold">Revenue for { selectedCustomer }</Text>}
+            />
+            <Line data={formatCustomerRevenue(filteredCustomerData) options={option}} />
+          </Card>
+          <Card style = {{ width:500, height: 300 }}>
+            <CardHeader
+              header={<Text weight="semibold">Revenue for { selectedCustomer } in { endMonth.slice(-2) }</Text>}
+            />
+            <Bar data={formatCustomerYOY(filteredCustomerData)} />
+          </Card>
+          <Card style = {{ width:500, height: 300 }}>
+            <CardHeader
+              header={<Text weight="semibold">Monthly revenue growth for { selectedCustomer }</Text>}
+            />
+            <Bar data={formatCustomerMOM(filteredCustomerData)} />
+          </Card>
+          <Card style = {{ width:500, height: 300 }}>
+            <CardHeader
+              header={<Text weight="semibold">Share of Total Revenue for { selectedCustomer }</Text>}
+            />
+            <Line data={prepareCustomerShareOf(filteredCustomerData, filteredData)} />
+          </Card>
+        </Stack>
+        <Stack>
+          <Card style = {{ width:500, height: 300 }}>
+            <CardHeader
+            header={<Text weight="semibold">Total Monthly Revenue</Text>}
+            />
+            <Line data={formatCustomerRevenue(AggregateRevenue(filteredData))} />
+          </Card>
+          <Card style = {{ width:500, height: 300 }}>
+            <CardHeader
+              header={<Text weight="semibold">Total Revenue in { endMonth.slice(-2) }</Text>}
+            />
+            <Bar data={formatCustomerYOY(AggregateRevenue(filteredData))} />
+          </Card>
+          <Card style = {{ width:500, height: 300 }}>
+            <CardHeader
+              header={<Text weight="semibold">Total Monthly Revenue Growth</Text>}
+            />
+            <Bar data={formatCustomerMOM(AggregateRevenue(filteredData))} />
+          </Card>
+          <Card style = {{ width:500, height: 300 }}>
+            <CardHeader
+              header={<Text weight="semibold">Herfindahl-Hirschman Index (HHI) Over Time</Text>}
+            />
+            <Line data={prepareHH(filteredData)} />
+          </Card>
+        </Stack>
+      </Stack>
+      
 
-      <Card>
-        <CardHeader
-          header={<Text weight="semibold">Total Monthly Revenue</Text>}
-        />
-        <Line data={formatCustomerRevenue(AggregateRevenue(filteredData))} />
-      </Card>
-      <Card>
-        <CardHeader
-          header={<Text weight="semibold">Total Revenue in { endMonth.slice(-2) }</Text>}
-        />
-        <Bar data={formatCustomerYOY(AggregateRevenue(filteredData))} />
-      </Card>
-      <Card>
-        <CardHeader
-          header={<Text weight="semibold">Total Monthly Revenue Growth</Text>}
-        />
-        <Bar data={formatCustomerMOM(AggregateRevenue(filteredData))} />
-      </Card>
-      <Card>
-        <CardHeader
-          header={<Text weight="semibold">Herfindahl-Hirschman Index (HHI) Over Time</Text>}
-        />
-        <Line data={prepareHH(filteredData)} />
-      </Card>
+      
 
     </Stack>
   );
