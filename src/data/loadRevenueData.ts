@@ -13,7 +13,7 @@ export type RevenueRow = {
  * Load and transform revenue CSV into long format
  */
 export async function loadRevenueData(): Promise<RevenueRow[]> {
-  const response = await fetch("/data/revenue.csv");
+  const response = await fetch("/data/revenueFull.csv");
   const csvText = await response.text();
 
   const parsed = Papa.parse<Record<string, string>>(csvText, {

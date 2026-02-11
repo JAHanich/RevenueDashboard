@@ -110,13 +110,53 @@ final <- final[!apply(final[, cols], 1, function(x)
 
 View(final)
 
-which(duplicated(final$Numero)) #Investigate duplicated numbers
+#Treating duplicates 
 
 
-final$Numero[duplicated(final$Numero)]
+coalesceRows <- function(row1, row2) {
+  stopifnot(length(row1) == length(row2))  # rows must be same length
+  result <- vector("list", length(row1))  # list preserves types
+  for (i in seq_along(row1)) {
+    if (!is.na(row1[[i]])) {
+      result[[i]] <- row1[[i]]
+    } else {
+      result[[i]] <- row2[[i]]
+    }
+  }
+  # Return as the same type of object as input
+  if (is.data.frame(row1)) {
+    return(as.data.frame(result, stringsAsFactors = FALSE))
+  } else {
+    return(unlist(result))
+  }
+}
 
-View(final[final$Numero %in% 
-           final$Numero[duplicated(final$Numero)], ])
-View(final[(final$Numero == 385), ])
+#Coalesce duplicated rows
 
+row1 <- final[7, , drop = FALSE]  # drop=FALSE keeps it as data frame
+row2 <- final[473, , drop = FALSE]
+
+final[7, ] <- coalesceRows(row1, row2)
+final <- final[-473, ]
+
+row1 <- final[145, , drop = FALSE]  # drop=FALSE keeps it as data frame
+row2 <- final[481, , drop = FALSE]
+
+final[145, ] <- coalesceRows(row1, row2)
+final <- final[-481, ]
+
+row1 <- final[340, , drop = FALSE]  # drop=FALSE keeps it as data frame
+row2 <- final[544, , drop = FALSE]
+
+final[340, ] <- coalesceRows(row1, row2)
+final <- final[-544, ]
+
+#Format to make it compatible with loadRevenueData.ts file
+
+final <- final %>%
+mutate(customer = paste(Numero, Nom, sep=" - ")) %>%
+relocate(customer, .before = 1) %>%
+select(-c(NomAbrege, Nom, Numero)) %>%
+arrange(customer) %>%
+write_csv("public/data/revenueFull.csv", row.names = FALSE, na = "")
 
