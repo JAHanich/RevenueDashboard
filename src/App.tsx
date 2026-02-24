@@ -42,29 +42,6 @@ export default function App() {
   const filteredCustomerData: RevenueRow[] = filterRevenue(data, selectedCustomer, startMonth, endMonth);
   const filteredData: RevenueRow[] = filterRevenue(data, "All", startMonth, endMonth);
 
-  const option = {
-  scales: {
-    x: {
-      ticks: {
-        color: 'white',
-        font: {
-          size: 12,
-          weight: 'bold',
-        },
-      },
-    },
-    y: {
-      ticks: {
-        color: 'white',
-        font: {
-          size: 12,
-        },
-      },
-    },
-  },
-};
-
-
   return (
     <Stack
       horizontalAlign="center"
@@ -121,7 +98,7 @@ export default function App() {
             <CardHeader
               header={<Text weight="semibold">Revenue for { selectedCustomer }</Text>}
             />
-            <Line data={formatCustomerRevenue(filteredCustomerData) options={option}} />
+            <Line data={formatCustomerRevenue(filteredCustomerData)} />
           </Card>
           <Card style = {{ width:500, height: 300 }}>
             <CardHeader

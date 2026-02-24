@@ -1,5 +1,6 @@
 install.packages("readr")
 install.packages("tidyverse")
+install.packages("writexl")
 library(readr)
 library(dplyr)
 library(tidyr)
@@ -158,5 +159,8 @@ mutate(customer = paste(Numero, Nom, sep=" - ")) %>%
 relocate(customer, .before = 1) %>%
 select(-c(NomAbrege, Nom, Numero)) %>%
 arrange(customer) %>%
-write_csv("public/data/revenueFull.csv", row.names = FALSE, na = "")
+write_csv("public/data/revenueFull.csv", na = "")
+
+library(writexl)
+write_xlsx(final, "public/data/revenue.xlsx")
 
